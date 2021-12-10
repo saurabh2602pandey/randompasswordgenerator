@@ -21,7 +21,8 @@ func dbConn() (db *sql.DB) {
 	return db
 }
 
-func generate() string {
+func main() {
+
 	rand.Seed(time.Now().UnixNano())
 	var letters = []byte("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
 	b := make([]byte, 25)
@@ -35,20 +36,19 @@ func generate() string {
 	fmt.Println("password", newpassword)
 	fmt.Println(b)
 	db := dbConn()
-	sql := fmt.Sprintf("select user_name from entry where user_name= ('%s')", newpassword)
+	sql := fmt.Sprintf("INSERT INTO entry(user_name) VALUES ('%s')", newpassword)
 	fmt.Println(sql)
-	_, err := db.Exec(sql)
+	ll, err := db.Exec(sql)
 
 	if err != nil {
 		fmt.Println(err.Error())
 
 	}
+	id, err := ll.LastInsertId()
+	if err != nil {
+		fmt.Println(err.Error())
 
+	}
+	fmt.Println(id)
 	defer db.Close()
-	return newpassword
-}
-func main() {
-	here := generate()
-	fmt.Println(here)
-
 }
